@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإعداد — جسر الحق</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2a5e;
+    --gold: #c9a84c;
+    --gold-light: #e8cc7a;
+    --bg: #f0ede6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Cairo',sans-serif; background:var(--bg); color:var(--navy); direction:rtl; }
+
+  header {
+    background:var(--navy);
+    color:var(--gold);
+    padding:16px 32px;
+    font-size:1.1rem;
+    font-weight:700;
+    border-bottom:3px solid var(--gold);
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  header span { font-size:0.75rem; color:#aaa; font-weight:400; margin-right:auto; }
+
+  .layout {
+    display:grid;
+    grid-template-columns:380px 1fr;
+    height:calc(100vh - 58px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background:white;
+    border-left:1px solid #e0d8cc;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+  }
+
+  .section {
+    border-bottom:1px solid #f0e8d8;
+    padding:20px;
+  }
+
+  .section-title {
+    font-size:0.8rem;
+    font-weight:700;
+    color:var(--gold);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .field-group { margin-bottom:14px; }
+  label { display:block; font-size:0.78rem; color:#666; margin-bottom:5px; font-weight:600; }
+
+  input[type=text], input[type=number], select, textarea {
+    width:100%;
+    padding:9px 12px;
+    border:1.5px solid #e0d8cc;
+    border-radius:6px;
+    font-family:'Cairo',sans-serif;
+    font-size:0.85rem;
+    color:var(--navy);
+    background:#faf8f4;
+    direction:rtl;
+    transition:border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline:none;
+    border-color:var(--gold);
+    background:white;
+  }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+  .color-row {
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .color-row input[type=color] {
+    width:40px;
+    height:36px;
+    padding:2px;
+    border-radius:6px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .color-row input[type=text] { flex:1; }
+
+  .upload-area {
+    border:2px dashed #d0c8b8;
+    border-radius:10px;
+    padding:20px;
+    text-align:center;
+    cursor:pointer;
+    transition:all 0.2s;
+    background:#faf8f4;
+  }
+  .upload-area:hover { border-color:var(--gold); background:#fffdf8; }
+  .upload-area .icon { font-size:2rem; margin-bottom:6px; }
+  .upload-area p { font-size:0.8rem; color:#888; }
+  .upload-area input { display:none; }
+
+  .hint-box {
+    background:#fff8e8;
+    border:1px solid #e8d898;
+    border-radius:8px;
+    padding:12px;
+    font-size:0.78rem;
+    color:#7a5a00;
+    line-height:1.7;
+  }
+
+  .btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    font-family:'Cairo',sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .btn-gold { background:var(--gold); color:var(--navy); }
+  .btn-gold:hover { background:var(--gold-light); }
+  .btn-navy { background:var(--navy); color:var(--gold); margin-top:8px; }
+  .btn-navy:hover { background:#0f1a3d; }
+
+  /* OUTPUT JSON */
+  .json-output {
+    background:#1a1a2e;
+    border-radius:8px;
+    padding:14px;
+    font-family:monospace;
+    font-size:0.72rem;
+    color:#90d890;
+    line-height:1.6;
+    white-space:pre;
+    overflow-x:auto;
+    max-height:200px;
+    overflow-y:auto;
+    position:relative;
+  }
+
+  .copy-btn {
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:var(--gold);
+    color:var(--navy);
+    border:none;
+    border-radius:4px;
+    padding:4px 10px;
+    font-size:0.7rem;
+    font-weight:700;
+    cursor:pointer;
+    font-family:'Cairo',sans-serif;
+  }
+
+  /* CANVAS AREA */
+  .canvas-area {
+    background:#2a2a3e;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .canvas-wrapper {
+    position:relative;
+    max-width:700px;
+    width:100%;
+    cursor:crosshair;
+    user-select:none;
+  }
+
+  .canvas-wrapper img {
+    width:100%;
+    border-radius:8px;
+    display:block;
+    pointer-events:none;
+  }
+
+  /* Placeholder when no image */
+  .no-image {
+    width:100%;
+    aspect-ratio:4/3;
+    background:#1a1a2e;
+    border:2px dashed #444;
+    border-radius:8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#666;
+    gap:12px;
+  }
+  .no-image .big-icon { font-size:3rem; }
+  .no-image p { font-size:0.85rem; }
+
+  /* Text overlays on canvas */
+  .text-overlay {
+    position:absolute;
+    transform:translate(-50%, -50%);
+    pointer-events:none;
+    white-space:nowrap;
+    text-shadow:0 1px 3px rgba(0,0,0,0.5);
+    font-family:'Cairo',sans-serif;
+  }
+
+  /* Drag handles */
+  .drag-handle {
+    position:absolute;
+    transform:translate(-50%, -50%);
+    cursor:move;
+    z-index:10;
+  }
+
+  .drag-handle .handle-dot {
+    width:14px;
+    height:14px;
+    background:var(--gold);
+    border:2px solid white;
+    border-radius:50%;
+    box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .drag-handle .handle-label {
+    position:absolute;
+    top:-22px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--gold);
+    color:var(--navy);
+    font-size:0.6rem;
+    font-weight:700;
+    padding:2px 6px;
+    border-radius:3px;
+    white-space:nowrap;
+    font-family:'Cairo',sans-serif;
+  }
+
+  /* Crosshair lines */
+  .crosshair-h, .crosshair-v {
+    position:absolute;
+    background:rgba(201,168,76,0.3);
+    pointer-events:none;
+  }
+  .crosshair-h { height:1px; width:100%; transform:translateY(-50%); }
+  .crosshair-v { width:1px; height:100%; transform:translateX(-50%); }
+
+  .canvas-info {
+    margin-top:12px;
+    color:#aaa;
+    font-size:0.75rem;
+    text-align:center;
+  }
+  .canvas-info strong { color:var(--gold); }
+
+  /* Steps indicator */
+  .steps {
+    display:flex;
+    gap:0;
+    background:rgba(255,255,255,0.05);
+    border-radius:8px;
+    margin-bottom:20px;
+    overflow:hidden;
+    width:100%;
+    max-width:700px;
+  }
+  .step {
+    flex:1;
+    padding:10px;
+    text-align:center;
+    font-size:0.75rem;
+    color:#888;
+    border-left:1px solid rgba(255,255,255,0.08);
+    transition:all 0.2s;
+  }
+  .step.active { background:rgba(201,168,76,0.15); color:var(--gold); font-weight:700; }
+  .step.done { color:#90d890; }
+  .step:first-child { border-left:none; }
+</style>
+</head>
+<body>
+
+<header>
+  ⚙️ لوحة إعداد التصاميم — جسر الحق
+  <span>هذه الصفحة لك أنت فقط — لا ترفعها للزوار</span>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="section">
+      <div class="section-title">① رفع الصورة</div>
+      <div class="upload-area" onclick="document.getElementById('img-upload').click()">
+        <div class="icon">🖼</div>
+        <p>اضغط لرفع صورة التصميم</p>
+        <p style="font-size:0.7rem;margin-top:4px;color:#bbb">PNG أو JPG — يفضل أبعاد 1600×1200</p>
+        <input type="file" id="img-upload" accept="image/*" onchange="loadImage(event)">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">② بيانات التصميم</div>
+      <div class="field-group">
+        <label>اسم التصميم (للتعريف)</label>
+        <input type="text" id="design-label" placeholder="مثال: عيد الفطر ١" oninput="updateJSON()">
+      </div>
+      <div class="field-group">
+        <label>المناسبة</label>
+        <select id="design-occasion" onchange="updateJSON()">
+          <option value="ramadan">🌙 رمضان المبارك</option>
+          <option value="fitr">🌙 عيد الفطر</option>
+          <option value="adha">🕌 عيد الأضحى</option>
+          <option value="national">🇸🇦 اليوم الوطني</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>اسم ملف الصورة (كما ستحفظه في مجلد images)</label>
+        <input type="text" id="design-image" placeholder="images/fitr-1.jpg" oninput="updateJSON()">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">③ إعدادات حقل الاسم</div>
+      <div class="hint-box" style="margin-bottom:14px">
+        📌 اسحب النقطة الذهبية على الصورة لتحديد موقع الاسم
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label>حجم الخط</label>
+          <input type="number" id="name-size" value="22" min="10" max="60" oninput="updatePreview();updateJSON()">
+        </div>
+        <div class="field-group">
+          <label>محاذاة</label>
+          <select id="name-align" onchange="updatePreview();updateJSON()">
+            <option value="center">وسط</option>
+            <option value="right">يمين</option>
+            <option value="left">يسار</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>لون النص</label>
+        <div class="color-row">
+          <input type="color" id="name-color-picker" value="#1a2a5e" oninput="syncColor('name');updatePreview();updateJSON()">
+          <input type="text" id="name-color" value="#1a2a5e" oninput="syncColorPicker('name');updatePreview();updateJSON()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>نص تجريبي للاسم</label>
+        <input type="text" id="preview-name" value="المحامي / معاذ بن نجم الزهراني" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">④ إعدادات حقل المسمى الوظيفي</div>
+      <div class="two-col">
+        <div class="field-group">
+          <label>حجم الخط</label>
+          <input type="number" id="title-size" value="16" min="10" max="50" oninput="updatePreview();updateJSON()">
+        </div>
+        <div class="field-group">
+          <label>محاذاة</label>
+          <select id="title-align" onchange="updatePreview();updateJSON()">
+            <option value="center">وسط</option>
+            <option value="right">يمين</option>
+            <option value="left">يسار</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>لون النص</label>
+        <div class="color-row">
+          <input type="color" id="title-color-picker" value="#c9a84c" oninput="syncColor('title');updatePreview();updateJSON()">
+          <input type="text" id="title-color" value="#c9a84c" oninput="syncColorPicker('title');updatePreview();updateJSON()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>نص تجريبي للمسمى</label>
+        <input type="text" id="preview-title" value="محامٍ ومستشار قانوني" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⑤ كود JSON — انسخه لـ designs.json</div>
+      <div style="position:relative">
+        <div class="json-output" id="json-output"></div>
+        <button class="copy-btn" onclick="copyJSON()">نسخ</button>
+      </div>
+      <div id="copy-feedback" style="text-align:center;font-size:0.75rem;color:#90a890;margin-top:6px;display:none">✓ تم النسخ!</div>
+    </div>
+
+  </div>
+
+  <!-- CANVAS AREA -->
+  <div class="canvas-area">
+    <div class="steps" id="steps">
+      <div class="step active" id="step1">① ارفع صورة</div>
+      <div class="step" id="step2">② حدد موقع الاسم</div>
+      <div class="step" id="step3">③ حدد موقع المسمى</div>
+      <div class="step" id="step4">④ انسخ الكود</div>
+    </div>
+
+    <div class="canvas-wrapper" id="canvas-wrapper">
+      <div class="no-image" id="no-image">
+        <div class="big-icon">🖼</div>
+        <p>ارفع صورة التصميم من الشريط الجانبي</p>
+        <p style="font-size:0.7rem;color:#555">سيظهر التصميم هنا وتقدر تسحب موقع النص</p>
+      </div>
+    </div>
+
+    <div class="canvas-info" id="canvas-info" style="display:none">
+      موقع الاسم: <strong id="pos-name">—</strong> |
+      موقع المسمى: <strong id="pos-title">—</strong>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let namePos = { x: 50, y: 85 };
+let titlePos = { x: 50, y: 91 };
+let imageLoaded = false;
+let dragging = null;
+
+function loadImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Suggest filename
+  const fname = file.name;
+  if (!document.getElementById('design-image').value) {
+    document.getElementById('design-image').value = 'images/' + fname;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const wrapper = document.getElementById('canvas-wrapper');
+    document.getElementById('no-image')?.remove();
+
+    // Clear old
+    wrapper.querySelectorAll('img, .text-overlay, .drag-handle, .crosshair-h, .crosshair-v').forEach(el => el.remove());
+
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.id = 'design-img';
+    img.draggable = false;
+    wrapper.appendChild(img);
+
+    img.onload = () => {
+      imageLoaded = true;
+      renderHandles();
+      updatePreview();
+      updateJSON();
+      setStep(2);
+    };
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('canvas-info').style.display = 'block';
+}
+
+function renderHandles() {
+  const wrapper = document.getElementById('canvas-wrapper');
+  wrapper.querySelectorAll('.drag-handle, .text-overlay, .crosshair-h, .crosshair-v').forEach(el => el.remove());
+
+  // Name handle
+  const nh = createHandle('name', namePos, 'الاسم');
+  wrapper.appendChild(nh);
+
+  // Title handle
+  const th = createHandle('title', titlePos, 'المسمى');
+  wrapper.appendChild(th);
+
+  updatePreview();
+}
+
+function createHandle(type, pos, label) {
+  const h = document.createElement('div');
+  h.className = 'drag-handle';
+  h.id = `handle-${type}`;
+  h.style.left = pos.x + '%';
+  h.style.top = pos.y + '%';
+  h.innerHTML = `
+    <div class="handle-label">${label}</div>
+    <div class="handle-dot"></div>
+  `;
+
+  // Drag logic
+  let isDragging = false;
+  let startX, startY;
+
+  h.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragging = type;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging || dragging !== type) return;
+    const wrapper = document.getElementById('canvas-wrapper');
+    const rect = wrapper.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+
+    if (type === 'name') namePos = { x: Math.round(x*10)/10, y: Math.round(y*10)/10 };
+    else titlePos = { x: Math.round(x*10)/10, y: Math.round(y*10)/10 };
+
+    h.style.left = x + '%';
+    h.style.top = y + '%';
+    updatePreview();
+    updateJSON();
+    updatePosInfo();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging && dragging === type) {
+      isDragging = false;
+      dragging = null;
+      if (type === 'name') setStep(3);
+      if (type === 'title') setStep(4);
+    }
+  });
+
+  // Touch support
+  h.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    dragging = type;
+    e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging || dragging !== type) return;
+    const touch = e.touches[0];
+    const wrapper = document.getElementById('canvas-wrapper');
+    const rect = wrapper.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((touch.clientY - rect.top) / rect.height) * 100));
+
+    if (type === 'name') namePos = { x: Math.round(x*10)/10, y: Math.round(y*10)/10 };
+    else titlePos = { x: Math.round(x*10)/10, y: Math.round(y*10)/10 };
+
+    h.style.left = x + '%';
+    h.style.top = y + '%';
+    updatePreview();
+    updateJSON();
+    updatePosInfo();
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => { isDragging = false; dragging = null; });
+
+  return h;
+}
+
+function updatePreview() {
+  if (!imageLoaded) return;
+  const wrapper = document.getElementById('canvas-wrapper');
+  wrapper.querySelectorAll('.text-overlay').forEach(el => el.remove());
+
+  const nameText = document.getElementById('preview-name').value || 'الاسم هنا';
+  const titleText = document.getElementById('preview-title').value || 'المسمى الوظيفي';
+  const nameSize = document.getElementById('name-size').value;
+  const titleSize = document.getElementById('title-size').value;
+  const nameColor = document.getElementById('name-color').value;
+  const titleColor = document.getElementById('title-color').value;
+  const nameAlign = document.getElementById('name-align').value;
+  const titleAlign = document.getElementById('title-align').value;
+
+  // Scale font based on wrapper width
+  const wrapperW = wrapper.offsetWidth || 700;
+  const scale = wrapperW / 1600;
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'text-overlay';
+  nameEl.style.left = namePos.x + '%';
+  nameEl.style.top = namePos.y + '%';
+  nameEl.style.fontSize = (nameSize * scale * 1.4) + 'px';
+  nameEl.style.color = nameColor;
+  nameEl.style.fontWeight = 'bold';
+  nameEl.style.textAlign = nameAlign;
+  nameEl.textContent = nameText;
+  wrapper.appendChild(nameEl);
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'text-overlay';
+  titleEl.style.left = titlePos.x + '%';
+  titleEl.style.top = titlePos.y + '%';
+  titleEl.style.fontSize = (titleSize * scale * 1.4) + 'px';
+  titleEl.style.color = titleColor;
+  titleEl.style.textAlign = titleAlign;
+  titleEl.textContent = titleText;
+  wrapper.appendChild(titleEl);
+}
+
+function updatePosInfo() {
+  document.getElementById('pos-name').textContent = `x:${namePos.x}% y:${namePos.y}%`;
+  document.getElementById('pos-title').textContent = `x:${titlePos.x}% y:${titlePos.y}%`;
+}
+
+function updateJSON() {
+  const id = (document.getElementById('design-label').value || 'design').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+  const obj = {
+    id: id || 'my-design',
+    occasion: document.getElementById('design-occasion').value,
+    label: document.getElementById('design-label').value || 'تصميم جديد',
+    image: document.getElementById('design-image').value || 'images/design.jpg',
+    nameField: {
+      x: namePos.x,
+      y: namePos.y,
+      fontSize: parseInt(document.getElementById('name-size').value),
+      color: document.getElementById('name-color').value,
+      fontWeight: 'bold',
+      align: document.getElementById('name-align').value
+    },
+    titleField: {
+      x: titlePos.x,
+      y: titlePos.y,
+      fontSize: parseInt(document.getElementById('title-size').value),
+      color: document.getElementById('title-color').value,
+      fontWeight: 'normal',
+      align: document.getElementById('title-align').value
+    }
+  };
+
+  document.getElementById('json-output').textContent = JSON.stringify(obj, null, 2);
+  updatePosInfo();
+}
+
+function copyJSON() {
+  const text = document.getElementById('json-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const fb = document.getElementById('copy-feedback');
+    fb.style.display = 'block';
+    setTimeout(() => fb.style.display = 'none', 2000);
+  });
+}
+
+function syncColor(type) {
+  const picker = document.getElementById(`${type}-color-picker`);
+  document.getElementById(`${type}-color`).value = picker.value;
+}
+
+function syncColorPicker(type) {
+  const text = document.getElementById(`${type}-color`).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(text)) {
+    document.getElementById(`${type}-color-picker`).value = text;
+  }
+}
+
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`step${i}`);
+    if (i < n) { el.className = 'step done'; }
+    else if (i === n) { el.className = 'step active'; }
+    else { el.className = 'step'; }
+  }
+}
+
+// Init JSON
+updateJSON();
+</script>
+</body>
+</html>

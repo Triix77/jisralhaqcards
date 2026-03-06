@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جسر الحق — تصاميم المناسبات</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2a5e;--navy-dark:#0f1a3d;--gold:#c9a84c;--gold-light:#e8cc7a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{font-family:'Cairo',sans-serif;direction:rtl;min-height:100vh;overflow-x:hidden;background:#0d1635;}
+
+/* ANIMATED BACKGROUND */
+.bg-canvas{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,#0a1228 0%,#1a2a5e 40%,#0d1635 70%,#1a1a2e 100%);}
+.bg-canvas::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(201,168,76,0.08) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(26,42,94,0.4) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 80%,rgba(201,168,76,0.05) 0%,transparent 50%);
+  animation:bgPulse 8s ease-in-out infinite alternate;
+}
+.bg-canvas::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 1px 1px,rgba(201,168,76,0.15) 1px,transparent 0);
+  background-size:40px 40px;
+  animation:gridMove 20s linear infinite;
+  opacity:0.4;
+}
+
+@keyframes bgPulse{
+  0%{opacity:0.6;transform:scale(1);}
+  100%{opacity:1;transform:scale(1.05);}
+}
+@keyframes gridMove{
+  0%{transform:translate(0,0);}
+  100%{transform:translate(40px,40px);}
+}
+
+/* Floating orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;animation:float linear infinite;}
+.orb-1{width:300px;height:300px;background:rgba(201,168,76,0.06);top:-100px;right:-100px;animation-duration:25s;}
+.orb-2{width:400px;height:400px;background:rgba(26,42,94,0.4);bottom:-150px;left:-150px;animation-duration:30s;}
+.orb-3{width:200px;height:200px;background:rgba(201,168,76,0.04);top:50%;left:50%;animation-duration:20s;}
+
+@keyframes float{
+  0%{transform:translate(0,0) rotate(0deg);}
+  33%{transform:translate(30px,-20px) rotate(120deg);}
+  66%{transform:translate(-20px,30px) rotate(240deg);}
+  100%{transform:translate(0,0) rotate(360deg);}
+}
+
+/* Everything sits above bg */
+header,nav,main,*{position:relative;z-index:1;}
+
+/* HEADER */
+header{
+  background:rgba(10,18,40,0.85);
+  backdrop-filter:blur(12px);
+  padding:14px 32px;
+  display:flex;align-items:center;gap:16px;
+  border-bottom:2px solid rgba(201,168,76,0.4);
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,0.4);
+}
+.header-logo{height:44px;width:auto;filter:drop-shadow(0 0 8px rgba(201,168,76,0.3));}
+.header-text h1{font-family:'Amiri',serif;color:var(--gold);font-size:1.35rem;line-height:1.2;}
+.header-text p{font-size:0.58rem;color:#666;letter-spacing:2px;font-weight:300;margin-top:2px;}
+
+/* NAV */
+.occ-nav{
+  background:rgba(10,18,40,0.7);
+  backdrop-filter:blur(8px);
+  display:flex;border-bottom:2px solid rgba(201,168,76,0.25);
+  overflow-x:auto;scrollbar-width:none;padding:0 24px;
+}
+.occ-nav::-webkit-scrollbar{display:none;}
+.occ-tab{
+  padding:14px 24px;color:#667;font-size:1rem;font-weight:700;
+  cursor:pointer;border:none;background:none;
+  border-bottom:3px solid transparent;transition:all 0.25s;
+  white-space:nowrap;font-family:'Cairo',sans-serif;
+}
+.occ-tab:hover{color:var(--gold-light);}
+.occ-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,0.06);}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+
+.page-header{
+  display:flex;align-items:baseline;gap:12px;margin-bottom:24px;
+  border-bottom:1px solid rgba(201,168,76,0.2);padding-bottom:16px;
+}
+.page-title{font-family:'Amiri',serif;font-size:1.7rem;color:var(--gold);}
+.page-sub{color:#556;font-size:0.82rem;}
+
+/* GRID */
+.designs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:36px;}
+
+.design-card{
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(8px);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  transition:transform 0.25s,box-shadow 0.25s,border-color 0.25s;
+  border:2px solid rgba(255,255,255,0.08);
+  position:relative;
+}
+.design-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.4),0 0 20px rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.3);}
+.design-card.selected{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.2),0 12px 32px rgba(0,0,0,0.4);}
+
+.selected-mark{position:absolute;top:10px;left:10px;background:var(--gold);color:var(--navy);font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;z-index:5;display:none;}
+.design-card.selected .selected-mark{display:block;}
+
+.thumb-wrapper{position:relative;overflow:hidden;line-height:0;}
+.thumb-wrapper img{width:100%;display:block;}
+.thumb-name-overlay{position:absolute;pointer-events:none;font-family:'Cairo',sans-serif;font-weight:bold;transform:translate(-50%,-50%);white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
+
+.card-label{
+  padding:10px 14px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,18,40,0.6);border-top:1px solid rgba(201,168,76,0.15);
+}
+.card-label span{font-size:0.82rem;color:#aab;font-weight:600;}
+.card-label .pick{font-size:0.75rem;color:var(--gold);font-weight:700;}
+
+/* INPUT PANEL */
+.input-panel{
+  background:rgba(10,18,40,0.7);backdrop-filter:blur(12px);
+  border-radius:14px;padding:28px 32px;max-width:560px;
+  margin:0 auto 28px;border:1px solid rgba(201,168,76,0.2);
+  display:none;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.input-panel.visible{display:block;}
+.panel-title{font-family:'Amiri',serif;font-size:1.2rem;color:var(--gold);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,0.15);}
+
+.input-field{
+  width:100%;padding:13px 16px;
+  border:2px solid rgba(201,168,76,0.25);border-radius:8px;
+  font-family:'Cairo',sans-serif;font-size:1rem;color:#fff;
+  background:rgba(255,255,255,0.06);direction:rtl;
+  transition:border-color 0.2s;
+}
+.input-field:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,0.1);}
+.input-field::placeholder{color:transparent;}
+
+/* PREVIEW PANEL */
+.preview-panel{
+  background:rgba(10,18,40,0.7);backdrop-filter:blur(12px);
+  border-radius:14px;padding:28px 32px;max-width:700px;
+  margin:0 auto;border:1px solid rgba(201,168,76,0.2);
+  display:none;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.preview-panel.visible{display:block;}
+
+#final-preview-wrapper{position:relative;border-radius:10px;overflow:hidden;margin-bottom:20px;line-height:0;}
+#final-preview-wrapper img{width:100%;display:block;}
+.final-name-overlay{position:absolute;pointer-events:none;font-family:'Cairo',sans-serif;text-shadow:0 1px 6px rgba(0,0,0,0.6);transform:translate(-50%,-50%);white-space:nowrap;}
+
+.action-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-dl{background:var(--gold);color:var(--navy);border:none;padding:13px 32px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(201,168,76,0.3);}
+.btn-dl:hover{background:var(--gold-light);transform:translateY(-1px);}
+.btn-dl:disabled{background:#444;color:#888;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-reset{background:rgba(26,42,94,0.8);color:var(--gold);border:1px solid rgba(201,168,76,0.3);padding:13px 32px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;}
+.btn-reset:hover{background:rgba(26,42,94,1);transform:translateY(-1px);}
+
+.empty-state{text-align:center;padding:60px 20px;color:#556;font-size:0.9rem;grid-column:1/-1;}
+.loading{text-align:center;padding:60px 20px;color:#556;font-size:0.95rem;}
+
+@media(max-width:600px){
+  .designs-grid{grid-template-columns:1fr;}
+  .main{padding:20px 12px 50px;}
+  header{padding:12px 16px;}
+  .occ-tab{padding:12px 14px;font-size:0.88rem;}
+  .input-panel,.preview-panel{padding:20px 16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<header>
+  <img src="logo.png" alt="جسر الحق" class="header-logo">
+  <div class="header-text">
+    <h1>جسر الحق محامون ومستشارون</h1>
+    <p>JISR AL HAQ LAWYERS AND CONSULTANTS</p>
+  </div>
+</header>
+
+<nav class="occ-nav" id="occ-nav"></nav>
+
+<div class="main">
+  <div class="page-header">
+    <p class="page-title" id="page-title">تصاميم المناسبات</p>
+    <p class="page-sub">اختر التصميم وأدخل اسمك</p>
+  </div>
+  <div class="loading" id="loading">⏳ جاري التحميل...</div>
+  <div class="designs-grid" id="designs-grid"></div>
+
+  <div class="input-panel" id="input-panel">
+    <div class="panel-title">✏️ أدخل الاسم</div>
+    <input class="input-field" id="inp-name" type="text" oninput="onNameChange()">
+  </div>
+
+  <div class="preview-panel" id="preview-panel">
+    <div class="panel-title" style="margin-bottom:16px">👁 معاينة التصميم</div>
+    <div id="final-preview-wrapper"></div>
+    <div class="action-btns">
+      <button class="btn-dl" id="dl-btn" onclick="downloadDesign()">⬇ تحميل التصميم</button>
+      <button class="btn-reset" onclick="resetAll()">🔄 تصميم آخر</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+let allDesigns=[],allOccasions=[],currentOccasion=null,selectedDesign=null;
+
+async function init(){
+  try{
+    const res=await fetch('designs.json?v='+Date.now());
+    const data=await res.json();
+    allDesigns=data.designs||[];
+    allOccasions=data.occasions||[];
+    buildNav();
+    document.getElementById('loading').style.display='none';
+    if(allOccasions.length>0)switchOccasion(allOccasions[0].id);
+  }catch(e){
+    document.getElementById('loading').textContent='⚠️ تعذّر تحميل التصاميم.';
+  }
+}
+
+function buildNav(){
+  const nav=document.getElementById('occ-nav');
+  nav.innerHTML='';
+  allOccasions.forEach(occ=>{
+    const btn=document.createElement('button');
+    btn.className='occ-tab';
+    btn.dataset.occ=occ.id;
+    btn.innerHTML=occ.emoji+' '+occ.label;
+    btn.onclick=()=>switchOccasion(occ.id);
+    nav.appendChild(btn);
+  });
+}
+
+function switchOccasion(id){
+  currentOccasion=id;selectedDesign=null;
+  document.querySelectorAll('.occ-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector('[data-occ="'+id+'"]')?.classList.add('active');
+  const occ=allOccasions.find(o=>o.id===id);
+  if(occ)document.getElementById('page-title').textContent='تصاميم '+occ.label;
+  document.getElementById('input-panel').classList.remove('visible');
+  document.getElementById('preview-panel').classList.remove('visible');
+  document.getElementById('inp-name').value='';
+  renderGrid(id);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderGrid(occasionId){
+  const filtered=allDesigns.filter(d=>d.occasion===occasionId);
+  const grid=document.getElementById('designs-grid');
+  grid.innerHTML='';
+  if(filtered.length===0){
+    grid.innerHTML='<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:10px">🖼</div><p>لا توجد تصاميم لهذه المناسبة بعد</p></div>';
+    return;
+  }
+  filtered.forEach(design=>{
+    const card=document.createElement('div');
+    card.className='design-card';
+    card.id='dcard-'+design.id;
+    card.onclick=()=>selectDesign(design.id);
+    const nf=design.nameField;
+    const name=document.getElementById('inp-name').value;
+    card.innerHTML=`
+      <div class="selected-mark">✓ محدد</div>
+      <div class="thumb-wrapper" id="thumb-${design.id}">
+        <img src="${design.image}" alt="${design.label}" loading="lazy">
+        <div class="thumb-name-overlay" id="tn-${design.id}"
+          style="left:${nf.x}%;top:${nf.y}%;color:${nf.color};font-size:${nf.fontSize*0.38}px">
+          ${name}
+        </div>
+      </div>
+      <div class="card-label">
+        <span>${design.label}</span>
+        <span class="pick">اختيار ←</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function selectDesign(id){
+  selectedDesign=id;
+  document.querySelectorAll('.design-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('dcard-'+id)?.classList.add('selected');
+  document.getElementById('input-panel').classList.add('visible');
+  document.getElementById('preview-panel').classList.add('visible');
+  renderFinalPreview();
+  setTimeout(()=>document.getElementById('input-panel').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function onNameChange(){
+  const name=document.getElementById('inp-name').value;
+  allDesigns.forEach(d=>{
+    const tn=document.getElementById('tn-'+d.id);
+    if(tn)tn.textContent=name;
+  });
+  if(selectedDesign)renderFinalPreview();
+}
+
+function renderFinalPreview(){
+  const design=allDesigns.find(d=>d.id===selectedDesign);
+  if(!design)return;
+  const name=document.getElementById('inp-name').value;
+  const nf=design.nameField;
+  document.getElementById('final-preview-wrapper').innerHTML=`
+    <img src="${design.image}" alt="${design.label}">
+    <div class="final-name-overlay" style="left:${nf.x}%;top:${nf.y}%;font-size:${nf.fontSize}px;color:${nf.color};font-weight:${nf.fontWeight};text-align:${nf.align}">${name}</div>`;
+}
+
+async function downloadDesign(){
+  const btn=document.getElementById('dl-btn');
+  btn.textContent='⏳ جاري التحضير...';btn.disabled=true;
+  try{
+    const wrapper=document.getElementById('final-preview-wrapper');
+    const canvas=await html2canvas(wrapper,{scale:2,useCORS:true,allowTaint:true,backgroundColor:null,logging:false});
+    const link=document.createElement('a');
+    link.download='jisr-alhaq-'+selectedDesign+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){alert('حدث خطأ — يمكنك أخذ لقطة شاشة.');}
+  btn.textContent='⬇ تحميل التصميم';btn.disabled=false;
+}
+
+function resetAll(){
+  selectedDesign=null;
+  document.querySelectorAll('.design-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('input-panel').classList.remove('visible');
+  document.getElementById('preview-panel').classList.remove('visible');
+  document.getElementById('inp-name').value='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+init();
+</script>
+</body>
+</html>
